@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-# import urllib2
+import urllib3
 import time
 import json
 
@@ -20,7 +20,7 @@ class Book:
         self.amazon = amazon
 
 
-def get_recipe_instance(url_text):
+def get_book_instance(url_text):
     '''Make an instances from the site URL.
     
     Parameters
@@ -33,11 +33,14 @@ def get_recipe_instance(url_text):
     instance
         a national site instance
     '''
-    soup = BeautifulSoup(url_text, 'html.parser')
-    div_right = soup.find_all('div', class_='w4pl-inner')
+    http = urllib3.PoolManager()
+    response = http.request('GET', url_text)
+    soup = BeautifulSoup(response, 'html.parser')
+    # div_right = soup.find_all('div', class_='w4pl-inner')
     # book_list = []
 
-    div_right
+    return soup
+
 
     # for index, i in enumerate(div_right, 1):
     #     try:
@@ -62,3 +65,6 @@ def get_recipe_instance(url_text):
         # book_list.append(Book(title))
 
     # return book_list
+
+if __name__ == "__main__":
+    get_book_instance(baseurl)
