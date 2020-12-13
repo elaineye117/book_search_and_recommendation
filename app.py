@@ -29,16 +29,17 @@ def get_bot_response():
     # message = calculate_bm25(message_list, query_cleaned)
     # message_query = " ".join(message)
     returned_clean_response = calculate_bm25(response_list, query_cleaned)
-    df_response = df2.loc[df2['response_cleaned'] == returned_clean_response]
-    bookname = df_response.book
-    # book_summary = df_response.response
+    list_to_str = ' '.join(returned_clean_response)
+    df_response = df2.loc[df2['response_cleaned'] == list_to_str]
+    bookname = df_response.iloc[0]['book']
+    book_summary = df_response.iloc[0]['response']
 
 
     if len(what_the_user_said) == 0:
         return('Please enter a valid dream job...')
     elif len(bookname) == 0:
         return "Your dream is too ambitious, I'd recommend that you try to relax..."
-    return bookname
+    return (f'I recommend you to read "{bookname}", and its one sentence summary is "{book_summary}"')
     
 
 def clean_query(s):
