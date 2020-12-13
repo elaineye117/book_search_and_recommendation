@@ -26,14 +26,19 @@ def get_bot_response():
     # query and returns the relevant book to that. Your bot can
     # respond with any relevant response.
     query_cleaned = clean_query(what_the_user_said)
-    print(query_cleaned)
     # message = calculate_bm25(message_list, query_cleaned)
     # message_query = " ".join(message)
-    response = calculate_bm25(response_list, query_cleaned)
+    returned_clean_response = calculate_bm25(response_list, query_cleaned)
+    df_response = df2.loc[df2['response_cleaned'] == returned_clean_response]
+    bookname = df_response.book
+    # book_summary = df_response.response
 
-    if len(response) == 0:
+
+    if len(what_the_user_said) == 0:
+        return('Please enter a valid dream job...')
+    elif len(bookname) == 0:
         return "Your dream is too ambitious, I'd recommend that you try to relax..."
-    return " ".join(response)
+    return bookname
     
 
 def clean_query(s):
