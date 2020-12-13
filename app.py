@@ -47,14 +47,14 @@ def clean_query(s):
     return query
 
 def clean_df(df, column):
-    df[column] = df[column].str.lower().replace('[^A-Za-z0-9]+', ' ')
+    df['response_cleaned'] = df[column].str.lower().replace('[^A-Za-z0-9]+', ' ')
     stop = stopwords.words('english')
 
     df2 = df.copy()
 
-    df2[column] = df2[column].astype(str)
+    df2['response_cleaned'] = df2['response_cleaned'].astype(str)
 
-    df2[column] = df2[column].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop)]))
+    df2['response_cleaned'] = df2['response_cleaned'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop)]))
     return df2
 
 
