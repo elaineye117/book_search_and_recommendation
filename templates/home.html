@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <title>SI650 Final Project - Book Recommendation Chatbot</title>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <style>
+      body {
+        background-color: #c2c8c6;
+        font-family: monospace;
+      }
+      h1 {
+        background-color: #2f5056;
+        display: inline-block;
+        font-size: 3em;
+        margin: 0;
+        padding: 25px;
+        border-radius: 5px;
+        color: #c2c8c6;
+      }
+      h3 {
+        color: #112621;
+        font-size: 20px;
+        margin-top: 3px;
+        text-align: center;
+      }
+      #chatbox {
+        margin-left: auto;
+        margin-right: auto;
+        width: 40%;
+        margin-top: 60px;
+      }
+      #userInput {
+        margin-left: auto;
+        margin-right: auto;
+        width: 40%;
+        margin-top: 60px;
+      }
+      #textInput {
+        width: 90%;
+        border: none;
+        border-bottom: 3px solid black;
+        font-family: monospace;
+        font-size: 17px;
+      }
+      .userText {
+        color: white;
+        font-family: monospace;
+        font-size: 27px;
+        text-align: right;
+        line-height: 50px;
+      }
+      .userText span {
+        background-color: #325453;
+        padding: 10px;
+        border-radius: 2px;
+      }
+      .botText {
+        color: 4e1d04;
+        font-family: monospace;
+        font-size: 27px;
+        text-align: left;
+        line-height: 50px;
+      }
+      .botText span {
+        background-color: #dcbe87;
+        padding: 10px;
+        border-radius: 2px;
+      }
+      #tidbit {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 300px;
+      }
+      .boxed {
+        margin-left: auto;
+        margin-right: auto;
+        width: 78%;
+        margin-top: 60px;
+        border: 1px solid #112621;
+      }
+      .box {
+        border: 2px solid black;
+      }
+      .center{
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <img />
+    <center>
+      <h1>
+        Welcome to Your Personal Library Searching System
+      </h1>
+    </center>
+    <img src="https://www.crenshawlighting.com/wp-content/uploads/UofM-Cook-Library-1.jpg", alt="Umich Law Library" style="width:1000px;height:400px;" class="center">
+    <div class="box"></div>
+    <div class="boxed">
+      <div>
+        <div id="chatbox">
+          <p class="botText">
+            <span>Hi, I'm bookie, your personal book recommender! Tell me what is your dream job, I will give you the book you need~</span>
+          </p>
+        </div>
+        <div id="userInput">
+          <input id="textInput" type="text" name="msg" placeholder="Message" />
+        </div>
+      </div>
+      <script>
+        function getBotResponse() {
+          var rawText = $("#textInput").val();
+          var userHtml = '<p class="userText"><span>' + rawText + "</span></p>";
+          $("#textInput").val("");
+          $("#chatbox").append(userHtml);
+          document
+            .getElementById("userInput")
+            .scrollIntoView({ block: "start", behavior: "smooth" });
+          $.get("/get", { msg: rawText }).done(function(data) {
+            var botHtml = '<p class="botText"><span>' + data + "</span></p>";
+            $("#chatbox").append(botHtml);
+            document
+              .getElementById("userInput")
+              .scrollIntoView({ block: "start", behavior: "smooth" });
+          });
+        }
+        $("#textInput").keypress(function(e) {
+          if (e.which == 13) {
+            getBotResponse();
+          }
+        });
+      </script>
+    </div>
+  </body>
+</html>
