@@ -81,7 +81,7 @@ if __name__ == "__main__":
     #clean message column in df
     # df3 = clean_df(df2, 'message')
     # convert response column to list
-    response_list = df2['response'].tolist()
+    response_list = df2['response_cleaned'].tolist()
     # convert message column to list
     # message_list = df3['message'].tolist()
 
