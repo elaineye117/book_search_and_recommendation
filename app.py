@@ -36,17 +36,31 @@ def get_bot_response():
         # message = calculate_bm25(message_list, query_cleaned)
         # message_query = " ".join(message)
         returned_clean_response = calculate_f2exp(response_list, query_cleaned)
-        list_to_str = ' '.join(returned_clean_response)
-        df_response = df2.loc[df2['response_cleaned'] == list_to_str]
-        bookname = df_response.iloc[0]['book']
-        book_summary = df_response.iloc[0]['response']
+        list_response = []
+        for summary in returned_clean_response:
+            list_to_str = ''.join(summary)
+            list_response.append(list_to_str)
+        cols = ['book', 'response', 'response_cleaned']
+        new_df = pd.DataFrame(columns=cols)
+        for a in range(3):
+            new_df = new_df.append(df2.loc[df2['response_cleaned'] == list_response[a]], ignore_index=True)
+        new_df = new_df.drop_duplicates()
+        
+        bookname1 = new_df.iloc[0]['book']
+        book_summary1 = new_df.iloc[0]['response']
+        
+        bookname2 = new_df.iloc[1]['book']
+        book_summary2 = new_df.iloc[1]['response']
+
+        bookname3 = new_df.iloc[2]['book']
+        book_summary3 = new_df.iloc[2]['response']
 
 
         if len(what_the_user_said) == 0:
             return('Please enter a valid dream job...')
-        elif len(bookname) == 0:
+        elif len(bookname1) + len(bookname2) + len(bookname3) == 0:
             return "Your dream is too ambitious, I'd recommend that you try to relax..."
-        return (f'I recommend you to read "{bookname}", and its one sentence summary is "{book_summary}". What would you next dream be?')
+        return (f'I recommend you to read "{bookname1}" as your first book, and its one sentence summary is "{book_summary1}". The second book for you is "{bookname2}", and its one-sentence-summary is "{book_summary2}". The third recommended book is "{bookname3}", with summary of "{book_summary3}". What would you next dream be?')
     
 
 def clean_query(s):
@@ -185,7 +199,7 @@ def calculate_f2exp(corpus, query):
     bm25 = F2EXP(tokenized_corpus, k1=0.35)
 
     tokenized_query = query.split(" ")
-    top_results = bm25.get_top_n(tokenized_query, corpus, n=1)
+    top_results = bm25.get_top_n(tokenized_query, corpus, n=3)
     
     return top_results
 
