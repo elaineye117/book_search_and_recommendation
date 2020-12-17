@@ -1,70 +1,44 @@
 import requests
 from bs4 import BeautifulSoup
-import urllib3
-import time
-import json
+import pandas as pd
 
-baseurl = 'https://fourminutebooks.com/book-summaries/'
-CACHE_FILENAME = "cache.json"
-CACHE_DICT = {}
+url = 'https://fourminutebooks.com/book-summaries/'
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
 
+# Scrape using beatifulsoup
+result = requests.get(url, headers=headers)
+soup = BeautifulSoup(result.content, "html.parser")
+div_right = soup.find_all('div', class_='w4pl-inner')
 
-##################
-##  Scrapping   ##
-##################
-class Book:
+#Obtain Summary for each book
+booklist = []
+for a in soup.find_all('a',href = True):
+    booklist.append(a['href'])
+booklisturl = booklist[70:910]
+summaries = []
 
-    def __init__(self, title, summary, amazon):
-        self.title = title
-        self.summary = summary
-        self.amazon = amazon
+def get_summary(url):
+    link = url
+    result_page = requests.get(link, headers=headers)
+    soup_page = BeautifulSoup(result_page.content, "html.parser")
+    table = soup_page.find('div', class_='entry-content')
 
+    text = table.find('p')
+    summary = text.get_text()
 
-def get_book_instance(url_text):
-    '''Make an instances from the site URL.
+    return summary
+
+# Use tqdm to see the scrapping status
+from tqdm import tqdm_notebook as tqdm
+for sum in tqdm(booklisturl):
+    summaries.append(get_summary(sum))
     
-    Parameters
-    ----------
-    site_url: string
-        The URL for a recipe page in recipepuppy.com
-    
-    Returns
-    -------
-    instance
-        a national site instance
-    '''
-    http = urllib3.PoolManager()
-    response = http.request('GET', url_text)
-    soup = BeautifulSoup(response, 'html.parser')
-    # div_right = soup.find_all('div', class_='w4pl-inner')
-    # book_list = []
+# save summary into datafram
+summary = pd.DataFrame(summaries)   
 
-    return soup
+# clean summary by removing same first words:'1-Sentence-Summary: '
+summary['response'] = summary['response'].str.replace('1-Sentence-Summary: ', '', regex=True).replace('1-Sentence-Summary:', '', regex=True)
 
-
-    # for index, i in enumerate(div_right, 1):
-    #     try:
-    #         name = i.find('h3').text
-    #     except:
-    #         name = 'None'
-
-    #     try:
-    #         url = i.find('div', class_='url').text.split(' ')[0]
-    #     except:
-    #         url = 'None'
-
-    #     try:
-    #         website = i.find('a')['href']
-    #     except:
-    #         website = 'None'
-    #     try:
-    #         image = i.find('img', class_='thumb')['src']
-    #     except:
-    #         image = 'None'
-
-        # book_list.append(Book(title))
-
-    # return book_list
-
-if __name__ == "__main__":
-    get_book_instance(baseurl)
+# Rename column name
+summary = summary.rename(columns={0: "response"})
